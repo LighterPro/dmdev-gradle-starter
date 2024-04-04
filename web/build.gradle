@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group = 'ru.lighterpro'
+version = 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation project(":service")
+    implementation project(":common:util")
+    compileOnly "jakarta.servlet:jakarta.servlet-api:5.0.0"
+}
+
+war {
+    archiveFileName = "lighterpro.war"
+}
+
+tasks.register('deployWarToTomcat', Copy) {
+    group = "lighterpro"
+    from(war.archiveFile.get())
+    into("/Users/dos/Applications/apache-tomcat-10.1.19/webapps")
+}
+
+deployWarToTomcat.dependsOn war
+assemble.dependsOn deployWarToTomcat
+

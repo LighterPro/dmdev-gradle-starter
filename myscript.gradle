@@ -1,0 +1,62 @@
+import java.time.LocalDate
+
+tasks.register('first') {
+    doLast { println("I'm first task") }
+}
+
+tasks.register('second') {
+    dependsOn(first)
+    finalizedBy(third)
+    doLast {
+        println("I'm second task")
+    }
+}
+
+tasks.register('third') {
+    doLast { println("I'm third task") }
+}
+
+tasks.register('fourth') {
+    group = "lighterpro"
+    dependsOn(second)
+    doLast { println("I'm fourth task") }
+}
+
+gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
+    println("🫡🫡🫡🫡 Task graph start 🫡🫡🫡🫡")
+    graph.allTasks.each {
+        println(" - ${it.name}")
+    }
+    println("🫡🫡🫡🫡 Task graph end 🫡🫡🫡🫡")
+}
+
+gradle.taskGraph.beforeTask { Task task ->
+    if (task.group == "lighterpro") {
+        println("beforeTask callback, task $task")
+    }
+}
+
+gradle.taskGraph.afterTask { Task task ->
+    if (task.name == "first") {
+        println("afterTask callback, task $task")
+    }
+}
+
+project.defaultTasks("second")
+
+ext {
+    myname = "Dima"
+    currentDate = LocalDate.now()
+}
+
+println("👗👗👗👗 Properties test start 👗👗👗👗")
+println(project.ext.myname)
+println(project.myname)
+println(ext.myname)
+println("👗👗👗👗👗👗👗👗")
+println("Project properties:")
+println(project.properties)
+println("👗👗👗👗👗👗👗👗")
+println("System properties:")
+println(System.getProperty("sys.example"))
+println("👗👗👗👗 Properties test end 👗👗👗👗")

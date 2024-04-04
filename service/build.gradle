@@ -1,0 +1,39 @@
+plugins {
+    id 'java-library'
+    id 'jacoco'
+    id "custom-lighterpro"
+}
+
+group = 'ru.lighterpro'
+version = 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api project(":database")
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+test.finalizedBy jacocoTestReport
+jacocoTestReport.dependsOn test
+
+ext {
+    release = "false"
+}
+
+task makeRelease {
+    inputs.property("release", project.release)
+    outputs.file("$rootDir/myscript.gradle")
+
+    doLast {
+        println "Release in progress 👩‍❤️‍💋‍👨"
+    }
+}

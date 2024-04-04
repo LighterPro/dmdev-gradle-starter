@@ -1,0 +1,66 @@
+plugins {
+    id "java"
+}
+apply from: 'myscript.gradle'
+apply plugin: CustomPlugin.class
+
+sourceSets {
+    main {
+        java {
+            srcDir("$buildDir/generated-sources/querydsl")
+        }
+    }
+    test {
+
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+
+    Configuration configuration = getByName("implementations")
+
+    configureEach {
+        resolutionStrategy {
+            force("org.springframework:spring-aop:5.3.8")
+        }
+    }
+}
+
+dependencies {
+//    add('implementation', [group: "org.springframework", name: "spring-webmvc", version: "5.3.8"])
+//    add('implementation', "org.springframework:spring-webmvc:5.3.8")
+    implementation "org.springframework:spring-webmvc:5.3.8"
+}
+
+class CustomPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project project) {
+        def map = [description: "Hello task", group: "dmdev", type: DefaultTask.class]
+        addTask(project, map)
+    }
+
+    private static Task addTask(Project project, LinkedHashMap<String, Serializable> map) {
+        project.task(map, "hello") {
+            println "configuration phase. Task hello"
+            println "task: $description, group: $group, actions: ${actions.size()}"
+
+            doLast {
+                println("execution phase, action 1")
+            }
+            doFirst {
+                println("execution phase, action 2")
+            }
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "ru.lighterpro.HelloWorld"
+    }
+}
